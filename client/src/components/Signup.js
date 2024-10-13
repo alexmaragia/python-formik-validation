@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
+
 export const SignupForm = () => {
   const [customers, setCustomers] = useState([{}]);
   const [refreshPage, setRefreshPage] = useState(false);
-  // Pass the useFormik() hook initial form values and a submit function that will
-  // be called when the form is submitted
 
   useEffect(() => {
     console.log("FETCH! ");
@@ -36,7 +35,7 @@ export const SignupForm = () => {
       age: "",
     },
     validationSchema: formSchema,
-    onSubmit: (values) => {
+    onSubmit: (values, { resetForm }) => {
       fetch("customers", {
         method: "POST",
         headers: {
@@ -44,8 +43,9 @@ export const SignupForm = () => {
         },
         body: JSON.stringify(values, null, 2),
       }).then((res) => {
-        if (res.status == 200) {
+        if (res.status === 200) {
           setRefreshPage(!refreshPage);
+          resetForm();
         }
       });
     },
@@ -66,7 +66,6 @@ export const SignupForm = () => {
         <p style={{ color: "red" }}> {formik.errors.email}</p>
         <label htmlFor="name">Name</label>
         <br />
-
         <input
           id="name"
           name="name"
@@ -74,10 +73,8 @@ export const SignupForm = () => {
           value={formik.values.name}
         />
         <p style={{ color: "red" }}> {formik.errors.name}</p>
-
-        <label htmlFor="age">age</label>
+        <label htmlFor="age">Age</label>
         <br />
-
         <input
           id="age"
           name="age"
@@ -90,21 +87,19 @@ export const SignupForm = () => {
       <table style={{ padding: "15px" }}>
         <tbody>
           <tr>
-            <th>name</th>
-            <th>email</th>
-            <th>age</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Age</th>
           </tr>
           {customers === "undefined" ? (
             <p>Loading</p>
           ) : (
             customers.map((customer, i) => (
-              <>
-                <tr key={i}>
-                  <td>{customer.name}</td>
-                  <td>{customer.email}</td>
-                  <td>{customer.age}</td>
-                </tr>
-              </>
+              <tr key={i}>
+                <td>{customer.name}</td>
+                <td>{customer.email}</td>
+                <td>{customer.age}</td>
+              </tr>
             ))
           )}
         </tbody>
